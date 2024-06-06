@@ -1,0 +1,15 @@
+<.header>
+  Search Books
+</.header>
+
+<div class="max-w-sm">
+  <.live_component 
+     module={SearchappWeb.BookLive.SearchForm}
+     id="search-form"
+     show={true}
+     search_results = {@search_results}
+     search_phrase = {@search_phrase}
+     current_focus = {@current_focus}
+     patch={~p"/books/search"}
+   />
+</div>

@@ -22,6 +22,7 @@ defmodule SearchappWeb.Router do
     live "/books", BookLive.Index, :index
     live "/books/new", BookLive.Index, :new
     live "/books/:id/edit", BookLive.Index, :edit
+    live "/books/search", BookLive.Search, :search
 
     live "/books/:id", BookLive.Show, :show
     live "/books/:id/show/edit", BookLive.Show, :edit

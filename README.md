@@ -15,4 +15,5 @@ Steps:
 8. mix run priv/repo/seeds.exs
 9. Read up on this tutorial: https://peterullrich.com/complete-guide-to-full-text-search-with-postgres-and-ecto
 10. add lines to migration to ensure postgresql can use the all columns and create a new column called searchable
-11. 
+11. Read up on this tutorial: https://fullstackphoenix.com/tutorials/typeahead-with-liveview-and-tailwind
+  - need to change a lot due to different phoenix version

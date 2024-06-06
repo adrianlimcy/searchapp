@@ -22,20 +22,20 @@ defmodule Searchapp.Books do
     Repo.all(Book)
   end
 
-  def search_books(title) do
-    # query = from b in Book, select: b.title == ^title
-    # query = from(b in Book, where: fragment("? % ?", ^title, b.title), order_by: {:desc, fragment("? % ?", ^title, b.title)})
+  def search_books(search_word) do
+    # query = from b in Book, select: b.title == ^search_word
+    # query = from(b in Book, where: fragment("? % ?", ^search_word, b.title), order_by: {:desc, fragment("? % ?", ^search_word, b.title)})
 
     query = from(b in Book,
     where:
     fragment(
       "searchable @@ websearch_to_tsquery(?)",
-      ^title),
+      ^search_word),
     order_by: {
       :desc,
       fragment(
         "ts_rank_cd(searchable, websearch_to_tsquery(?), 4)",
-        ^title
+        ^search_word
         )
       }
     )
@@ -124,4 +124,32 @@ defmodule Searchapp.Books do
   def change_book(%Book{} = book, attrs \\ %{}) do
     Book.changeset(book, attrs)
   end
+
+  def search(""), do: []
+
+  def search(search_phrase) do
+    states()
+    |> Enum.filter(& matches?(&1, search_phrase))
+  end
+
+  def matches?(first, second) do
+    String.starts_with?(
+      String.downcase(first), String.downcase(second)
+    )
+  end
+
+  def states do
+    [
+      "Alabama", "Alaska", "Arizona", "Arkansas", "California",
+      "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii",
+      "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
+      "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+      "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+      "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota",
+      "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+      "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+      "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    ]
+  end
+
 end
