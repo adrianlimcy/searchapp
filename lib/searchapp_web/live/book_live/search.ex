@@ -5,12 +5,14 @@ defmodule SearchappWeb.BookLive.Search do
     search_results = []
     search_phrase = ""
     current_focus = -1
+    books = []
 
     {:ok,
     socket
     |> assign(:search_results, search_results)
     |> assign(:search_phrase, search_phrase)
     |> assign(:current_focus, current_focus)
+    |> assign(:books, books)
     }
   end
 

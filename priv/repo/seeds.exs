@@ -28,6 +28,9 @@ books = [
   %{
     author: "Sauron", body: "making rings", title: "Metal Crafting", url: "www.test.com"
   },
+  %{
+    author: "Eve", body: "One rib", title: "Ribbing and Riving", url: "www.test.com"
+  },
 ]
 
 Enum.each(books, fn(data)->

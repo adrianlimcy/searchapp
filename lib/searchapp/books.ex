@@ -22,26 +22,47 @@ defmodule Searchapp.Books do
     Repo.all(Book)
   end
 
-  def search_books(search_word) do
-    # query = from b in Book, select: b.title == ^search_word
-    # query = from(b in Book, where: fragment("? % ?", ^search_word, b.title), order_by: {:desc, fragment("? % ?", ^search_word, b.title)})
+  def search(""), do: []
 
-    query = from(b in Book,
-    where:
-    fragment(
-      "searchable @@ websearch_to_tsquery(?)",
-      ^search_word),
-    order_by: {
-      :desc,
-      fragment(
-        "ts_rank_cd(searchable, websearch_to_tsquery(?), 4)",
-        ^search_word
-        )
-      }
-    )
+  def search(search_phrase) do
+
+    query = from b in Book, select: b.title
 
     Repo.all(query)
+    |> Enum.filter(& matches?(&1, search_phrase))
   end
+
+  def matches?(first, second) do
+    String.starts_with?(
+      String.downcase(first), String.downcase(second)
+    )
+  end
+
+  def search_title(title) do
+    query = from b in Book, where: b.title == ^title
+    Repo.all(query)
+  end
+
+  # def search_books(search_word) do
+  #   # query = from b in Book, select: b.title == ^search_word
+  #   # query = from(b in Book, where: fragment("? % ?", ^search_word, b.title), order_by: {:desc, fragment("? % ?", ^search_word, b.title)})
+
+  #   query = from(b in Book,
+  #   where:
+  #   fragment(
+  #     "searchable @@ websearch_to_tsquery(?)",
+  #     ^search_word),
+  #   order_by: {
+  #     :desc,
+  #     fragment(
+  #       "ts_rank_cd(searchable, websearch_to_tsquery(?), 4)",
+  #       ^search_word
+  #       )
+  #     }
+  #   )
+
+  #   Repo.all(query)
+  # end
 
 
   @doc """
@@ -125,31 +146,38 @@ defmodule Searchapp.Books do
     Book.changeset(book, attrs)
   end
 
-  def search(""), do: []
 
-  def search(search_phrase) do
-    states()
-    |> Enum.filter(& matches?(&1, search_phrase))
-  end
+  # new lines added
 
-  def matches?(first, second) do
-    String.starts_with?(
-      String.downcase(first), String.downcase(second)
-    )
-  end
+  # def search(""), do: []
 
-  def states do
-    [
-      "Alabama", "Alaska", "Arizona", "Arkansas", "California",
-      "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii",
-      "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
-      "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
-      "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
-      "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota",
-      "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
-      "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
-      "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
-    ]
-  end
+  # def search(search_phrase) do
 
+  #   states()
+  #   |> Enum.filter(& matches?(&1, search_phrase))
+  # end
+
+  # def matches?(first, second) do
+  #   String.starts_with?(
+  #     String.downcase(first), String.downcase(second)
+  #   )
+  # end
+
+  # def states() do
+    # [
+    #   "Alabama", "Alaska", "Arizona", "Arkansas", "California",
+    #   "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii",
+    #   "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
+    #   "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+    #   "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+    #   "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota",
+    #   "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+    #   "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+    #   "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    # ]
+
+  #   query = from b in Book, select: b.title
+
+  #   Repo.all(query)
+  # end
 end

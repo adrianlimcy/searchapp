@@ -2,6 +2,9 @@ defmodule SearchappWeb.BookLive.SearchForm do
   use SearchappWeb, :live_component
 
   alias Searchapp.Books
+  alias Searchapp.Books.Book
+  import Ecto.Query
+  alias Searchapp.Repo
 
   @impl true
   def render(assigns) do
@@ -42,12 +45,34 @@ defmodule SearchappWeb.BookLive.SearchForm do
 
       <p class="pt-1 text-xs text-gray-700">Search for states</p>
     </.simple_form>
+
+    <.list>
+      <:item :for={book <- @books} title={"Books"}>
+      <%= book.title %>
+      <.link navigate={~p"/books/#{book.id}"}>Show</.link>
+      <.link patch={~p"/books/#{book.id}/edit"}>Edit</.link>
+
+      </:item>
+    </.list>
+
     </div>
     """
   end
 
   @impl true
-  def handle_event("submit", _, socket), do: {:noreply, socket} # PREVENT FORM SUBMIT
+  # def handle_event("submit", _, socket), do: {:noreply, socket} # PREVENT FORM SUBMIT
+
+  def handle_event("submit", %{"search_phrase" => search_phrase}, socket) do
+
+    # books = Books.search_title(search_phrase)
+
+    books = Repo.all(from b in Book, where: b.title == ^search_phrase)
+
+    {:noreply,
+    socket
+    |> assign(:books, books)
+    }
+  end
 
   def handle_event("search", %{"search_phrase" => search_phrase}, socket) do
 
@@ -74,9 +99,6 @@ defmodule SearchappWeb.BookLive.SearchForm do
   end
 
   def handle_event("set-focus", %{"key" => "ArrowUp"}, socket) do # UP
-
-
-    IO.puts "Hello there"
 
     current_focus =
       Enum.max([(socket.assigns.current_focus - 1), 0])
